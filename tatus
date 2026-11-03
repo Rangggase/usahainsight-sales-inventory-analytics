@@ -1,0 +1,115 @@
+ .gitignore                                     |  55 [32m+++[m
+ CARA_PASANG.txt                                |  21 [32m+[m
+ LICENSE                                        |  21 [32m+[m
+ PATCH_MANIFEST.txt                             |  15 [32m+[m
+ README.md                                      | 144 [32m+++++++[m
+ README_PEMASANGAN_V2B.md                       |  28 [32m++[m
+ README_PETUNJUK.txt                            |  17 [32m+[m
+ app/__init__.py                                |   0
+ app/database.py                                |  37 [32m++[m
+ app/demo.py                                    |  20 [32m+[m
+ app/main.py                                    | 513 [32m+++++++++++++++++++++++++[m
+ app/schema.sql                                 |  89 [32m+++++[m
+ app/services/__init__.py                       |   0
+ app/services/analytics.py                      | 120 [32m++++++[m
+ app/services/audit.py                          |  55 [32m+++[m
+ app/services/auth.py                           | 160 [32m++++++++[m
+ app/services/backups.py                        | 234 [32m+++++++++++[m
+ app/services/importers.py                      | 235 [32m+++++++++++[m
+ app/services/inventory_intelligence.py         | 190 [32m+++++++++[m
+ app/services/products.py                       | 150 [32m++++++++[m
+ app/services/reports.py                        |  83 [32m++++[m
+ app/services/restock_planner.py                | 179 [32m+++++++++[m
+ app/services/sales.py                          | 162 [32m++++++++[m
+ app/static/app.js                              |  84 [32m++++[m
+ app/static/favicon.svg                         |   1 [32m+[m
+ app/static/style.css                           |  48 [32m+++[m
+ app/templates/audit.html                       |  31 [32m++[m
+ app/templates/base.html                        |  53 [32m+++[m
+ app/templates/dashboard.html                   |  38 [32m++[m
+ app/templates/imports.html                     |  16 [32m+[m
+ app/templates/insights.html                    |  53 [32m+++[m
+ app/templates/inventory.html                   |  11 [32m+[m
+ app/templates/login.html                       |  15 [32m+[m
+ app/templates/product_form.html                |  18 [32m+[m
+ app/templates/products.html                    |  15 [32m+[m
+ app/templates/reports.html                     |   9 [32m+[m
+ app/templates/restock_planner.html             |  85 [32m++++[m
+ app/templates/sale_detail.html                 |  15 [32m+[m
+ app/templates/sale_form.html                   |  47 [32m+++[m
+ app/templates/transactions.html                |   6 [32m+[m
+ auth_manager.py                                |  26 [32m++[m
+ backup_manager.py                              |  68 [32m++++[m
+ data/sample_products.csv                       |  25 [32m++[m
+ data/sample_sales.csv                          | 336 [32m++++++++++++++++[m
+ docs/ANALYTICS_PIPELINE_V2.md                  |  48 [32m+++[m
+ docs/BUSINESS_PROCESS_V2.md                    |  59 [32m+++[m
+ docs/DATABASE_DESIGN_V2.md                     | 186 [32m+++++++++[m
+ docs/DB_VERIFICATION.sql                       |  40 [32m++[m
+ docs/DEMO_SCRIPT_V2.md                         |  17 [32m+[m
+ docs/ERD.md                                    |  54 [32m+++[m
+ docs/GITHUB_PUBLISH_V2.md                      | 108 [32m++++++[m
+ docs/LOGIN_CSRF_FIX.md                         |  46 [32m+++[m
+ docs/PORTFOLIO_RELEASE_CHECKLIST_V2.md         |  37 [32m++[m
+ docs/PROCESS.md                                |  40 [32m++[m
+ docs/SYSTEM_ARCHITECTURE_V2.md                 |  67 [32m++++[m
+ docs/TRACEABILITY_ARCHITECTURE_V2.md           |  19 [32m+[m
+ docs/UPGRADE_V1_1.md                           |  62 [32m+++[m
+ docs/UPGRADE_V1_2.md                           |  89 [32m+++++[m
+ docs/UPGRADE_V1_3A.md                          |  89 [32m+++++[m
+ docs/UPGRADE_V1_3B.md                          |  82 [32m++++[m
+ docs/UPGRADE_V1_3C.md                          |  72 [32m++++[m
+ docs/UPGRADE_V1_4A.md                          |  60 [32m+++[m
+ docs/UPGRADE_V1_4B.md                          |  60 [32m+++[m
+ docs/diagrams/01_arsitektur_sistem.dot         |  42 [32m++[m
+ docs/diagrams/01_arsitektur_sistem.png         | Bin [31m0[m -> [32m288603[m bytes
+ docs/diagrams/01_arsitektur_sistem.svg         | 228 [32m+++++++++++[m
+ docs/diagrams/02_alur_transaksi_penjualan.dot  |  32 [32m++[m
+ docs/diagrams/02_alur_transaksi_penjualan.png  | Bin [31m0[m -> [32m325691[m bytes
+ docs/diagrams/02_alur_transaksi_penjualan.svg  | 185 [32m+++++++++[m
+ docs/diagrams/03_alur_impor_csv.dot            |  31 [32m++[m
+ docs/diagrams/03_alur_impor_csv.png            | Bin [31m0[m -> [32m246534[m bytes
+ docs/diagrams/03_alur_impor_csv.svg            | 182 [32m+++++++++[m
+ docs/diagrams/04_pipeline_analitik_restock.dot |  45 [32m+++[m
+ docs/diagrams/04_pipeline_analitik_restock.png | Bin [31m0[m -> [32m331508[m bytes
+ docs/diagrams/04_pipeline_analitik_restock.svg | 239 [32m++++++++++++[m
+ docs/diagrams/erd_business.dot                 |  17 [32m+[m
+ docs/diagrams/erd_business.png                 | Bin [31m0[m -> [32m224558[m bytes
+ docs/diagrams/erd_business.svg                 | 120 [32m++++++[m
+ docs/diagrams/erd_security.dot                 |  10 [32m+[m
+ docs/diagrams/erd_security.png                 | Bin [31m0[m -> [32m115929[m bytes
+ docs/diagrams/erd_security.svg                 |  59 [32m+++[m
+ docs/screenshots/01_dashboard.png              | Bin [31m0[m -> [32m292221[m bytes
+ docs/screenshots/02_products.png               | Bin [31m0[m -> [32m120813[m bytes
+ docs/screenshots/03_sales.png                  | Bin [31m0[m -> [32m122231[m bytes
+ docs/screenshots/04_inventory.png              | Bin [31m0[m -> [32m127669[m bytes
+ docs/screenshots/05_analytics.png              | Bin [31m0[m -> [32m118586[m bytes
+ docs/screenshots/06_restock.png                | Bin [31m0[m -> [32m122501[m bytes
+ docs/screenshots/07_audit.png                  | Bin [31m0[m -> [32m125905[m bytes
+ docs/screenshots/dashboard.png                 | Bin [31m0[m -> [32m363170[m bytes
+ docs/screenshots/inventory.png                 | Bin [31m0[m -> [32m272974[m bytes
+ docs/screenshots/mobile.png                    | Bin [31m0[m -> [32m218034[m bytes
+ docs/screenshots/transaction_detail_v1_2.png   | Bin [31m0[m -> [32m110739[m bytes
+ docs/screenshots/transaction_form_v1_2.png     | Bin [31m0[m -> [32m138253[m bytes
+ docs/screenshots/transaction_mobile_v1_2.png   | Bin [31m0[m -> [32m90788[m bytes
+ generate_demo_data.py                          |  72 [32m++++[m
+ portfolio_preflight.py                         |  75 [32m++++[m
+ requirements-dev.txt                           |   3 [32m+[m
+ requirements.txt                               |   7 [32m+[m
+ reset_database.py                              |  39 [32m++[m
+ run.py                                         |   7 [32m+[m
+ run_mac_linux.sh                               |   7 [32m+[m
+ run_windows.bat                                |  21 [32m+[m
+ tests/__init__.py                              |   1 [32m+[m
+ tests/client.py                                |  33 [32m++[m
+ tests/test_app.py                              |  93 [32m+++++[m
+ tests/test_audit.py                            | 176 [32m+++++++++[m
+ tests/test_auth.py                             | 140 [32m+++++++[m
+ tests/test_backups.py                          | 149 [32m+++++++[m
+ tests/test_insights.py                         | 143 [32m+++++++[m
+ tests/test_login_cookie_fix.py                 |  70 [32m++++[m
+ tests/test_products.py                         | 160 [32m++++++++[m
+ tests/test_restock_planner.py                  | 232 [32m+++++++++++[m
+ tests/test_sales.py                            | 274 [32m+++++++++++++[m
+ verify_restore_sandbox.py                      | 120 [32m++++++[m
+ 114 files changed, 7775 insertions(+)

@@ -25,3 +25,17 @@
 - [ ] UAT pengguna UMKM dilakukan dan hasilnya didokumentasikan.
 - [ ] README dan video demo diverifikasi.
 - [ ] Perbedaan nomor versi internal aplikasi dan label release dijelaskan.
+
+## Validation Results
+
+- Automated testing: 114 tests passed.
+- Clean installation verification: 7 of 7 checks passed.
+- Developer acceptance testing: 6 of 6 scenarios passed.
+- External MSME user acceptance testing: Not conducted.
+
+## Known Limitations
+
+- The application is intended for local, single-administrator use.
+- Usability has not been independently validated with real MSME users.
+- Public production deployment requires additional security,
+  operational, and deployment review.

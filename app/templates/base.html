@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="UsahaInsight — analitik penjualan dan persediaan UMKM berbasis Python dan SQLite.">
+  <title>{{ title }} — UsahaInsight</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Navigasi utama">
+      <a class="brand" href="/" aria-label="UsahaInsight Beranda">
+        <span class="brand-mark">U</span>
+        <span class="brand-title">Usaha<span>Insight</span><small>BUSINESS INTELLIGENCE</small></span>
+      </a>
+      <div class="side-caption">WORKSPACE</div>
+      <nav class="nav-menu">
+        <a class="nav-link {% if active == 'dashboard' %}active{% endif %}" href="/"><span class="nav-symbol">▦</span> Dashboard</a>
+        <a class="nav-link {% if active == 'imports' %}active{% endif %}" href="/imports"><span class="nav-symbol">⇪</span> Impor Data</a>
+        <a class="nav-link {% if active == 'inventory' %}active{% endif %}" href="/inventory"><span class="nav-symbol">▤</span> Persediaan</a>
+        <a class="nav-link {% if active == 'products' %}active{% endif %}" href="/products"><span class="nav-symbol">▣</span> Produk</a>
+        <a class="nav-link {% if active == 'transactions' %}active{% endif %}" href="/transactions"><span class="nav-symbol">≡</span> Transaksi</a>
+        <a class="nav-link {% if active == 'insights' %}active{% endif %}" href="/insights"><span class="nav-symbol">◫</span> Analitik Persediaan</a>
+        <a class="nav-link {% if active == 'restock-planner' %}active{% endif %}" href="/restock-planner"><span class="nav-symbol">↻</span> Rekomendasi Restock</a>
+        <a class="nav-link {% if active == 'reports' %}active{% endif %}" href="/reports"><span class="nav-symbol">↧</span> Laporan</a>
+        <a class="nav-link {% if active == 'audit' %}active{% endif %}" href="/audit"><span class="nav-symbol">◷</span> Audit Trail</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="side-tip"><span class="tip-icon">✦</span><strong>Kelola lebih cerdas</strong><p>Ubah data harian menjadi keputusan yang lebih tepat.</p></div>
+        <div class="sidebar-version"><span class="status-dot"></span> Versi 1.4b · Local MVP</div>
+      </div>
+    </aside>
+    <div class="main-pane">
+      <header class="topbar">
+        <div class="top-left"><button id="menu-toggle" class="icon-btn mobile-only" aria-label="Buka menu" aria-controls="sidebar" aria-expanded="false">☰</button><span class="top-label">Workspace <span>/</span> <strong>{{ title }}</strong></span></div>
+        <div class="top-right"><span class="local-pill"><span class="status-dot"></span> Mode lokal</span><span class="user-identity">{{ current_user }}</span><form method="post" action="/logout" class="logout-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit" class="btn btn-small btn-outline">Keluar</button></form><div class="avatar">UI</div></div>
+      </header>
+      <main class="content-area">
+        {% if demo_mode %}
+        <div class="demo-strip"><span class="sparkle">✳</span><span><strong>DATA DEMO SINTETIS</strong> · Data contoh otomatis dimuat saat database pertama dibuat. Jangan gunakan data ini sebagai laporan bisnis nyata.</span></div>
+        {% else %}
+        <div class="demo-strip clean-db-strip"><span class="sparkle">✓</span><span><strong>DATABASE SENDIRI</strong> · Data demo tidak dimuat; silakan impor katalog produk lalu transaksi Anda.</span></div>
+        {% endif %}
+        {% block content %}{% endblock %}
+        <footer class="footer">UsahaInsight v1.4b <span>·</span> Dibangun dengan FastAPI, Python & SQLite <span>·</span> Portofolio Sistem Informasi</footer>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

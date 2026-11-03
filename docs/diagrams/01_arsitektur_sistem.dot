@@ -1,0 +1,42 @@
+digraph Architecture {
+rankdir=TB;
+graph [fontname="DejaVu Sans", bgcolor="white", pad="0.35", nodesep="0.38", ranksep="0.72", dpi=155, splines=polyline, outputorder=edgesfirst, newrank=true];
+node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", color="#B8C8D5", fillcolor="#F8FAFC", fontcolor="#13263B", penwidth=1.2, margin="0.20,0.14"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#597080", fontcolor="#536879", arrowsize=.75, penwidth=1.2];
+
+label="USAHAINSIGHT v1.4b  |  ARSITEKTUR SISTEM"; labelloc=t; fontsize=20; fontname="DejaVu Sans"; fontcolor="#102A43"; labeljust=l;
+subgraph cluster_client { label="1  Antarmuka"; fontname="DejaVu Sans"; fontsize=12; color="#D8E6EA"; style="rounded"; bgcolor="#F6FBFC";
+ browser [label="Browser pemilik UMKM\nHTML, CSS, JavaScript", fillcolor="#DDF4EF", color="#1BA891"];
+}
+subgraph cluster_web {label="2  Aplikasi FastAPI"; fontname="DejaVu Sans"; fontsize=12; color="#D8E6EA"; style=rounded;
+ server [label="Uvicorn + FastAPI\napp/main.py", fillcolor="#E2F2FF", color="#4A91BF"];
+ guard [label="Autentikasi sesi\n+ validasi CSRF", fillcolor="#E2F2FF", color="#4A91BF"];
+ routes [label="Route / Controller\nproduk, transaksi, impor,\nlaporan, insights, restock", fillcolor="#E2F2FF", color="#4A91BF"];
+ templates [label="Jinja2 templates\n+ static assets"];
+ server -> guard -> routes;
+ routes -> templates [style=dashed, label="respons HTML"];
+}
+subgraph cluster_service {label="3  Business & data services"; fontname="DejaVu Sans"; fontsize=12; color="#D8E6EA"; style=rounded;
+ ops [label="products.py | sales.py\nimporters.py | audit.py", fillcolor="#F0F9FF"];
+ analytics [label="analytics.py\ninventory_intelligence.py\nrestock_planner.py\nreports.py", fillcolor="#F0F9FF"];
+}
+subgraph cluster_data {label="4  Penyimpanan lokal"; fontname="DejaVu Sans"; fontsize=12; color="#D8E6EA"; style=rounded;
+ sqlite [label="SQLite database\n9 tabel aplikasi", shape=cylinder, fillcolor="#E8F3FF", color="#6E91B1"];
+ view [label="product_inventory\nVIEW: SUM(delta) stok", shape=component, fillcolor="#F1F6FC"];
+ backup [label="Backup .db + manifest\nSHA-256 (CLI)", shape=folder, fillcolor="#FAF6E8", color="#A88B46"];
+}
+client_data [label="CSV produk / penjualan", shape=note, fillcolor="#FAF6E8", color="#A88B46"];
+ export [label="Ekspor CSV / Excel", shape=note, fillcolor="#FAF6E8", color="#A88B46"];
+ cli [label="backup_manager.py\n(terminal lokal; tidak ada route web)", fillcolor="#FAF6E8", color="#A88B46"];
+ browser -> server [label="HTTP lokal"];
+ routes -> ops [label="aksi bisnis"];
+ routes -> analytics [label="baca / analisis"];
+ ops -> sqlite [label="SQL transaksi"];
+ analytics -> sqlite [label="SQL agregasi"];
+ sqlite -> view [label="SUM stock_movements.delta", style=dashed];
+ view -> analytics [style=dashed, constraint=false];
+ client_data -> ops [label="impor via HTTP", style=dashed];
+ analytics -> export [style=dashed, label="laporan"];
+ cli -> backup [label="create / verify / restore"];
+ sqlite -> cli [style=dashed, label="SQLite Backup API"];
+}

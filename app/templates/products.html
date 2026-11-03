@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-heading"><div><div class="eyebrow">PRODUCT MANAGEMENT</div><h1>Manajemen Produk</h1><p>Tambah, edit, dan arsipkan produk tanpa menghapus histori penjualan.</p></div><a href="/products/new" class="btn btn-primary">+ Tambah Produk</a></section>
+{% if success %}<div class="alert success-alert" role="status"><span>✓</span><div>{{ success }}</div></div>{% endif %}
+{% if error %}<div class="alert error-alert" role="alert"><span>!</span><div>{{ error }}</div></div>{% endif %}
+<div class="inventory-intro"><div><span class="inventory-dot"></span><strong>{{ rows|length }} produk</strong> sesuai filter</div><span>Arsip hanya diizinkan saat stok = 0</span></div>
+<article class="panel table-panel">
+<div class="table-toolbar"><form method="get" action="/products" class="search-form"><span>⌕</span><input type="hidden" name="status" value="{{ status }}"><input type="search" name="q" placeholder="SKU, nama, kategori..." value="{{ q }}" aria-label="Cari produk"><button type="submit">Cari</button></form><div class="product-tabs"><a class="btn btn-small {% if status == 'active' %}btn-primary{% else %}btn-outline{% endif %}" href="/products?status=active">Aktif</a><a class="btn btn-small {% if status == 'archived' %}btn-primary{% else %}btn-outline{% endif %}" href="/products?status=archived">Diarsipkan</a></div></div>
+<div class="table-wrap"><table class="inventory-table"><thead><tr><th>Produk</th><th>Kategori</th><th>Harga</th><th>Stok</th><th>Minimum</th><th class="align-right">Tindakan</th></tr></thead><tbody>
+{% for p in rows %}<tr><td><div class="product-cell"><span class="product-letter">{{ p.name[:1]|upper }}</span><span><strong>{{ p.name }}</strong><small>{{ p.sku }}</small></span></div></td><td>{{ p.category }}</td><td>{{ p.unit_price|idr }}</td><td>{{ p.current_stock }}</td><td>{{ p.min_stock }}</td><td class="align-right"><div class="product-actions">
+{% if p.is_active %}<a class="btn btn-small btn-soft" href="/products/{{ p.id }}/edit">Edit</a><form action="/products/{{ p.id }}/archive" method="post" onsubmit="return confirm('Arsipkan {{ p.sku }}? Stok harus 0. Riwayat penjualan tetap tersimpan.');"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn btn-small btn-outline" type="submit">Arsip</button></form>{% else %}<form action="/products/{{ p.id }}/restore" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn btn-small btn-primary" type="submit">Aktifkan</button></form>{% endif %}
+</div></td></tr>{% else %}<tr><td colspan="6" class="empty-cell">Tidak ada produk yang cocok.</td></tr>{% endfor %}
+</tbody></table></div></article>
+<p class="product-note">SKU bersifat permanen karena digunakan sebagai identitas produk pada histori transaksi. Pengubahan stok tetap melalui fitur Restock; mengedit produk tidak mengubah stok.</p>
+{% endblock %}

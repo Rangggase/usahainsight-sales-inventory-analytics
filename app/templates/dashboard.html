@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-heading heading-dashboard">
+  <div><div class="eyebrow">OVERVIEW</div><h1>Dashboard Bisnis <span class="greeting">✳</span></h1><p>Ringkasan penjualan dan kesehatan persediaan toko Anda.</p></div>
+  <a href="/reports" class="btn btn-primary"><span>↓</span> Unduh Laporan</a>
+</section>
+<section class="hero-welcome">
+  <div><span class="hero-kicker">INSIGHT HARI INI</span><h2>Keputusan bisnis yang lebih baik dimulai dari data.</h2><p>Pantau penjualan, temukan produk unggulan, dan identifikasi stok yang memerlukan perhatian.</p><a href="/inventory" class="hero-link">Lihat persediaan <span>→</span></a></div>
+  <div class="hero-visual" aria-hidden="true"><div class="hero-circle circle-a"></div><div class="hero-circle circle-b"></div><div class="hero-widget"><div class="hw-top"><span>Aktivitas toko</span><b>↗</b></div><div class="hw-bars"><i style="height:32%"></i><i style="height:57%"></i><i style="height:42%"></i><i style="height:74%"></i><i style="height:63%"></i><i style="height:94%"></i><i style="height:79%"></i></div></div></div>
+</section>
+<div class="section-titlebar"><div><h2>Performa Penjualan</h2><p>Ringkasan indikator utama</p></div><div class="filter-buttons" aria-label="Periode dashboard"><a href="/?period=7" class="filter {% if data.period == '7' %}selected{% endif %}">7 Hari</a><a href="/?period=30" class="filter {% if data.period == '30' %}selected{% endif %}">30 Hari</a><a href="/?period=90" class="filter {% if data.period == '90' %}selected{% endif %}">90 Hari</a><a href="/?period=all" class="filter {% if data.period == 'all' %}selected{% endif %}">Semua</a></div></div>
+<section class="metrics-grid">
+  <article class="metric-card"><div class="metric-head"><span>Total Omzet</span><div class="metric-icon mint">Rp</div></div><div class="metric-value">{{ data.revenue | idr }}</div><span class="metric-foot"><span class="dot mint-dot"></span> Pendapatan pada periode terpilih</span></article>
+  <article class="metric-card"><div class="metric-head"><span>Jumlah Transaksi</span><div class="metric-icon blue">▣</div></div><div class="metric-value">{{ '{:,}'.format(data.transactions).replace(',', '.') }}</div><span class="metric-foot"><span class="dot blue-dot"></span> Invoice unik</span></article>
+  <article class="metric-card"><div class="metric-head"><span>Unit Terjual</span><div class="metric-icon purple">▥</div></div><div class="metric-value">{{ '{:,}'.format(data.units).replace(',', '.') }}</div><span class="metric-foot"><span class="dot purple-dot"></span> Produk yang terjual</span></article>
+  <article class="metric-card"><div class="metric-head"><span>Stok Perlu Perhatian</span><div class="metric-icon orange">!</div></div><div class="metric-value">{{ data.low_stock }} <small>produk</small></div><span class="metric-foot"><span class="dot orange-dot"></span> Stok ≤ batas minimum, seluruh periode</span></article>
+</section>
+<section class="dashboard-middle">
+  <article class="panel chart-panel"><div class="panel-heading"><div><h3>Tren Omzet Mingguan</h3><p>Perubahan pendapatan per minggu selama 10 minggu terakhir dalam data</p></div><span class="chart-label">● Pendapatan</span></div>
+    <div class="line-chart-wrap">
+      <svg viewBox="0 0 870 255" class="revenue-chart" role="img" aria-label="Grafik omzet mingguan">
+        <defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#2dbca8" stop-opacity=".23"/><stop offset="100%" stop-color="#2dbca8" stop-opacity="0"/></linearGradient></defs>
+        {% for tick in data.chart.ticks %}<line x1="55" y1="{{ tick.y }}" x2="845" y2="{{ tick.y }}" class="grid-line"/><text x="42" y="{{ tick.y + 4 }}" class="axis-text" text-anchor="end">{{ tick.value | idr_compact }}</text>{% endfor %}
+        <path d="{{ data.chart.area }}" fill="url(#chartFill)"/><path d="{{ data.chart.line }}" fill="none" stroke="#14a994" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+        {% for pt in data.chart.points %}<circle cx="{{ pt.x }}" cy="{{ pt.y }}" r="4" fill="#fff" stroke="#14a994" stroke-width="2.5"><title>{{ pt.label }}: {{ pt.value | idr }}</title></circle><text x="{{ pt.x }}" y="228" class="axis-text" text-anchor="middle">{{ pt.label }}</text>{% endfor %}
+      </svg>
+    </div><p class="fine-print">Catatan: grafik menggunakan 10 minggu terakhir berdasarkan tanggal transaksi terbaru pada data. Filter periode juga berlaku pada nilai grafik.</p>
+  </article>
+  <article class="panel top-panel"><div class="panel-heading"><div><h3>Produk Terlaris</h3><p>Urutan berdasarkan jumlah unit</p></div><span class="mini-badge">TOP 6</span></div><div class="top-list">
+    {% for p in data.top %}<div class="top-item"><div class="top-info"><span class="rank">{{ '%02d' % loop.index }}</span><div><strong>{{ p.name }}</strong><small>{{ p.units }} unit · {{ p.revenue | idr }}</small></div></div><div class="progress-track"><div class="progress-fill" style="width:{{ p.percent }}%"></div></div></div>
+    {% else %}<div class="empty-state small">Belum ada penjualan pada periode ini.</div>{% endfor %}
+  </div></article>
+</section>
+<section class="dashboard-bottom">
+  <article class="panel"><div class="panel-heading"><div><h3>Transaksi Terbaru</h3><p>Aktivitas pada periode terpilih</p></div><a href="/transactions" class="text-link">Lihat semua →</a></div><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Tanggal</th><th>Unit</th><th class="align-right">Total</th></tr></thead><tbody>{% for r in data.recent %}<tr><td><span class="table-strong">{{ r.invoice_no }}</span></td><td>{{ r.sold_at }}</td><td>{{ r.quantity }}</td><td class="align-right table-strong">{{ r.total | idr }}</td></tr>{% else %}<tr><td colspan="4" class="empty-cell">Belum ada transaksi.</td></tr>{% endfor %}</tbody></table></div></article>
+  <article class="panel"><div class="panel-heading"><div><h3>Perhatian Stok</h3><p>Produk yang harus segera diperiksa</p></div><a href="/inventory" class="text-link">Kelola stok →</a></div><div class="table-wrap"><table><thead><tr><th>Produk</th><th>Stok</th><th class="align-right">Status</th></tr></thead><tbody>{% for p in data.low_products %}<tr><td><span class="table-strong">{{ p.name }}</span><small class="sub-id">{{ p.sku }}</small></td><td>{{ p.current_stock }} / min {{ p.min_stock }}</td><td class="align-right"><span class="status-tag {% if p.current_stock == 0 %}status-red{% else %}status-orange{% endif %}">{{ p.status }}</span></td></tr>{% else %}<tr><td colspan="3" class="empty-cell">Tidak ada stok menipis.</td></tr>{% endfor %}</tbody></table></div></article>
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+digraph Sales {
+rankdir=TB;
+graph [fontname="DejaVu Sans", bgcolor="white", pad="0.35", nodesep="0.38", ranksep="0.72", dpi=155, splines=polyline, outputorder=edgesfirst, newrank=true];
+node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", color="#B8C8D5", fillcolor="#F8FAFC", fontcolor="#13263B", penwidth=1.2, margin="0.20,0.14"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#597080", fontcolor="#536879", arrowsize=.75, penwidth=1.2];
+
+label="USAHAINSIGHT  |  ALUR TRANSAKSI PENJUALAN MANUAL"; labelloc=t; fontsize=19; fontcolor="#102A43"; labeljust=l;
+node [width=2.5];
+start [label="Pengguna login dan\nmembuka Buat Transaksi", shape=oval, fillcolor="#DDF4EF", color="#1BA891"];
+form [label="Isi tanggal, item, kuantitas,\nnomor invoice (opsional)"];
+auth [label="POST /transactions/new\nvalidasi sesi + token CSRF", fillcolor="#E2F2FF", color="#4A91BF"];
+valid [label="Validasi formulir\n(tanggal, ID, qty, request key)", shape=diamond, fillcolor="#FFF6DC", color="#B99334"];
+begin [label="BEGIN IMMEDIATE\ntransaksi SQLite", fillcolor="#E2F2FF", color="#4A91BF"];
+replay [label="Request key sudah\npernah diproses?", shape=diamond, fillcolor="#FFF6DC", color="#B99334"];
+same [label="Payload sama?", shape=diamond, fillcolor="#FFF6DC", color="#B99334"];
+returnold [label="Kembalikan invoice lama\ntanpa membuat penjualan ulang", fillcolor="#DDF4EF", color="#1BA891"];
+stock [label="Cek invoice unik, produk aktif,\nharga aktual & stok mencukupi", shape=diamond, fillcolor="#FFF6DC", color="#B99334"];
+commit [label="Satu transaksi atomik:\ntransactions + transaction_items\n+ stock_movements negatif\n+ manual_sale_requests + audit_events", fillcolor="#DDF4EF", color="#1BA891"];
+success [label="COMMIT dan buka\ndetail invoice", shape=oval, fillcolor="#DDF4EF", color="#1BA891"];
+fail [label="Tolak permintaan\nTidak ada penjualan parsial", shape=oval, fillcolor="#FCE9E8", color="#C76A61"];
+start -> form -> auth -> valid;
+valid -> fail [label="gagal"];
+valid -> begin [label="valid"];
+begin -> replay;
+replay -> same [label="ya"];
+same -> returnold [label="sama"];
+same -> fail [label="berbeda"];
+replay -> stock [label="belum"];
+stock -> fail [label="tidak memenuhi"];
+stock -> commit [label="lulus"];
+commit -> success;
+}

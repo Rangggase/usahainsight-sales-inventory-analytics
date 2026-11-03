@@ -1,0 +1,10 @@
+digraph DB {
+graph [rankdir=LR,bgcolor="white",pad="0.3",nodesep="0.60",ranksep="0.95",fontname="DejaVu Sans",label="UsahaInsight • ERD Keamanan & Audit",labelloc=t,fontsize=22,fontcolor="#182D40"];
+node [shape=box,style="rounded,filled",fillcolor="#F8FBFD",color="#7995A7",penwidth=1.3,fontname="DejaVu Sans",fontsize=12,margin="0.18,0.12"];
+edge [color="#58768A",penwidth=1.4,arrowsize=0.65,fontname="DejaVu Sans",fontsize=10,fontcolor="#354D60"];
+auth_users [label="Pengguna\n──────────────────\nid (PK)\nusername (UNIQUE)\npassword_hash, failures"];
+auth_sessions [label="Sesi\n──────────────────\ntoken_hash (PK)\nuser_id (FK)\ncsrf_token, expires_at"];
+audit_events [label="Jejak Audit\n──────────────────\nid (PK)\nactor_user_id (FK)\naction, target_type, target_id\nbefore_json, after_json"];
+auth_users -> auth_sessions [label="1 : banyak"];
+auth_users -> audit_events [label="1 : banyak"];
+}

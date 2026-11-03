@@ -1,0 +1,31 @@
+digraph Import {
+rankdir=TB;
+graph [fontname="DejaVu Sans", bgcolor="white", pad="0.35", nodesep="0.38", ranksep="0.72", dpi=155, splines=polyline, outputorder=edgesfirst, newrank=true];
+node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", color="#B8C8D5", fillcolor="#F8FAFC", fontcolor="#13263B", penwidth=1.2, margin="0.20,0.14"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#597080", fontcolor="#536879", arrowsize=.75, penwidth=1.2];
+
+label="USAHAINSIGHT  |  ALUR IMPOR DATA CSV"; labelloc=t; fontsize=19; fontcolor="#102A43"; labeljust=l;
+node [width=2.4];
+start [label="Pengguna login membuka\nImpor Data", shape=oval, fillcolor="#DDF4EF", color="#1BA891"];
+choose [label="Unggah CSV produk\natau CSV penjualan"];
+csrf [label="Validasi sesi, CSRF, .csv\ndan batas unggah 2 MB", fillcolor="#E2F2FF", color="#4A91BF"];
+parse [label="Parsing CSV + validasi semua baris\nkolom wajib, tipe, nilai, SKU, invoice"];
+valid [label="Seluruh baris valid?", shape=diamond, fillcolor="#FFF6DC", color="#B99334"];
+type [label="Jenis file?", shape=diamond, fillcolor="#FFF6DC", color="#B99334"];
+prod [label="Produk: insert / update\nSKU yang sesuai; stok awal\nhanya untuk produk baru", fillcolor="#F0F9FF"];
+sale [label="Penjualan: validasi invoice\ndan ketersediaan stok;\nsimpan header, item & delta negatif", fillcolor="#F0F9FF"];
+audit [label="Dalam satu transaksi SQLite:\ntulis data + event audit impor", fillcolor="#DDF4EF", color="#1BA891"];
+commit [label="COMMIT dan tampilkan\nringkasan berhasil", shape=oval, fillcolor="#DDF4EF", color="#1BA891"];
+error [label="Tolak impor, ROLLBACK\nTidak ada batch parsial", shape=oval, fillcolor="#FCE9E8", color="#C76A61"];
+start -> choose -> csrf -> parse -> valid;
+csrf -> error [label="tidak sah"];
+valid -> error [label="tidak"];
+valid -> type [label="ya"];
+type -> prod [label="produk"];
+type -> sale [label="penjualan"];
+prod -> audit;
+sale -> audit;
+prod -> error [style=dashed, label="gagal SQL"];
+sale -> error [style=dashed, label="stok/invoice gagal"];
+audit -> commit;
+}

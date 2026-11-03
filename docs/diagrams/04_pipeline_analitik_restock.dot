@@ -1,0 +1,45 @@
+digraph Analytics {
+rankdir=TB;
+graph [fontname="DejaVu Sans", bgcolor="white", pad="0.35", nodesep="0.38", ranksep="0.72", dpi=155, splines=polyline, outputorder=edgesfirst, newrank=true];
+node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", color="#B8C8D5", fillcolor="#F8FAFC", fontcolor="#13263B", penwidth=1.2, margin="0.20,0.14"];
+edge [fontname="DejaVu Sans", fontsize=9, color="#597080", fontcolor="#536879", arrowsize=.75, penwidth=1.2];
+
+label="USAHAINSIGHT  |  PIPELINE ANALITIK DAN SMART RESTOCK"; labelloc=t; fontsize=19; fontcolor="#102A43"; labeljust=l;
+subgraph cluster_in { label="1  Sumber dan periode"; fontname="DejaVu Sans"; fontsize=12; color="#D8E6EA"; style=rounded;
+ sales [label="transactions\n+ transaction_items", shape=cylinder, fillcolor="#E8F3FF"];
+ stock [label="products\n+ stock_movements", shape=cylinder, fillcolor="#E8F3FF"];
+ settings [label="reorder_settings\n(lead, safety, review)", shape=cylinder, fillcolor="#E8F3FF"];
+ filters [label="Filter: 7 / 30 / 90 hari\nSKU, kategori, klasifikasi", fillcolor="#DDF4EF", color="#1BA891"];
+}
+subgraph cluster_calc {label="2  Perhitungan yang dapat diaudit"; fontname="DejaVu Sans"; fontsize=12; color="#D8E6EA"; style=rounded;
+ agg [label="Agregasi unit terjual\ndengan tanggal transaksi", fillcolor="#F0F9FF"];
+ inv [label="View product_inventory\ncurrent_stock = SUM(delta)", fillcolor="#F0F9FF"];
+ velocity [label="Sales velocity = unit / hari\nCoverage = stok / velocity", fillcolor="#F0F9FF"];
+ class [label="Klasifikasi stok habis,\nproduk baru, lambat terjual\n(<= 2 unit setelah cukup usia)", fillcolor="#F0F9FF"];
+}
+subgraph cluster_rule {label="3  Keputusan restock"; fontname="DejaVu Sans"; fontsize=12; color="#D8E6EA"; style=rounded;
+ eligible [label="Konfigurasi tersedia?\nUsia cukup? Penjualan > 0?", shape=diamond, fillcolor="#FFF6DC", color="#B99334"];
+ explain [label="Tidak menghasilkan angka\nrekomendasi. Tampilkan alasan.", fillcolor="#FFF6DC", color="#B99334"];
+ formula [label="ROP = ceil(velocity x lead) + safety\nTarget = ceil(velocity x (lead + review))\n           + safety", fillcolor="#DDF4EF", color="#1BA891"];
+ decide [label="Stok <= ROP?", shape=diamond, fillcolor="#FFF6DC", color="#B99334"];
+ due [label="Perlu pesan ulang\nqty = max(1, Target - stok)", fillcolor="#DDF4EF", color="#1BA891"];
+ healthy [label="Belum perlu pesan\nqty = 0", fillcolor="#DDF4EF", color="#1BA891"];
+}
+output [label="Dashboard + tabel filter\nEkspor CSV / Excel\n(Rekomendasi bersifat indikatif)", shape=folder, fillcolor="#E2F2FF", color="#4A91BF"];
+sales -> agg;
+filters -> agg;
+stock -> inv;
+agg -> velocity;
+inv -> velocity;
+velocity -> class;
+class -> eligible;
+settings -> eligible;
+eligible -> explain [label="tidak"];
+eligible -> formula [label="ya"];
+formula -> decide;
+decide -> due [label="ya"];
+decide -> healthy [label="tidak"];
+explain -> output;
+due -> output;
+healthy -> output;
+}

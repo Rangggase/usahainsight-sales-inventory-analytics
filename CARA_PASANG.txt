@@ -1,0 +1,21 @@
+UsahaInsight v1.3b - Perbaikan pengujian restore sandbox untuk Windows
+
+1. Hentikan aplikasi/server FastAPI (Ctrl+C).
+2. Simpan arsip ZIP ini di folder UsahaInsight yang berisi run.py.
+3. Backup skrip lama (opsional):
+   Copy-Item .\verify_restore_sandbox.py .\verify_restore_sandbox-before-fix.py
+4. Ekstrak ZIP ke folder UsahaInsight dengan -Force.
+5. Jalankan:
+   .\.venv\Scripts\python.exe verify_restore_sandbox.py
+6. Lalu:
+   .\.venv\Scripts\python.exe -m pytest -q
+
+Perubahan:
+- Koneksi sqlite3 pada sandbox ditutup eksplisit sebelum operasi restore.
+- Semua snapshot uji dan backup pre-restore berada dalam direktori sementara.
+- Menghindari penambahan backup pengujian pada folder backups utama.
+- Pesan error menyertakan tahap proses dan traceback untuk diagnosa Windows.
+- Database utama tidak menjadi target restore.
+
+Pengujian pada lingkungan pengembangan Linux: restore sandbox LULUS dan 68 tests passed.
+Perlu konfirmasi pada Windows pengguna karena kegagalan asli terjadi di Windows.

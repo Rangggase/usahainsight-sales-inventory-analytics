@@ -1,0 +1,55 @@
+# Virtual environments, caches and IDE state
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Secrets, settings and local authentication/session data
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Active SQLite databases, WAL files, and all snapshots
+instance/
+backups/
+backups_legacy/
+backups*/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.db3
+
+# UAT data, downloaded source patches, prior-code backups and local artifacts
+data/test_csv/
+app-before-*/
+app-before*/
+README-before-v2c.md
+.gitignore-before-v2c.txt
+*.zip
+*.7z
+*.bak
+*.log
+*.tmp
+set_usia_*_uji.py
+diagnosa_login_usahainsight.py
+verify_restore_sandbox-before-fix.py
+
+# Generated test reports (recreate locally)
+test-reports/
+coverage.xml
+.coverage
+htmlcov/
+
+# Keep curated documentation screenshots and SVG/PNG diagrams in docs/

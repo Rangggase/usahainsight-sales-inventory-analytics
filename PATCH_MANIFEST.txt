@@ -1,0 +1,15 @@
+UsahaInsight v1.4b — Smart Restock Recommendation
+Basis: v1.4a (termasuk perbaikan login CSRF v1.3b)
+Pasang pada folder yang berisi run.py, setelah backup dan server dimatikan.
+Tidak menyertakan instance/, backups/, database, .venv, cookie atau kata sandi.
+
+app/schema.sql    6b69908a1e6999aa3eebd103f077e376f395ceceeb4c4aae42267edb8cc8002b
+app/main.py    4cac4866e44c14f8cdd0f28cc1aab28e3c16ef031a3b6eb1b9a84171fb57a159
+app/services/audit.py    92dcc6069185fe81a4aa0040dd42ed1e4dca125c912cb59c7936018dc4ff9d6c
+app/services/restock_planner.py    ef5a4875371cfd8d61509d2b88e99fd531118425d72579a041ce76616f645408
+app/templates/base.html    9f3edbfa6d0e3b264487acc88a3c596352467e101712489fff13906c2182b145
+app/templates/restock_planner.html    96d55f468e5c59868b16402b8eb8e151e067b508d5ab72ff9bf1dbb1882a97ee
+app/static/style.css    8dcab83aec23c31a80d33e26145f367a87e9591b5bc216dfeafe5409c9792dc9
+docs/UPGRADE_V1_4B.md    75d0304a7416e3a8a1076cba1311ab5da97f5cb6f8ebada19802f369855b3eac
+tests/test_sales.py    2b0c589d21821bf0e50ab205d30a593f67a50072a9420ff81098e61a5fc48af1
+tests/test_restock_planner.py    f3b27e637e5d6d038f3d7e5a581bbb0f014f20ad53552ad0a202b869b2e24676

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-heading"><div><div class="eyebrow">TRANSACTION MANAGEMENT / INVOICE</div><h1>Detail Invoice</h1><p>Rincian harga ketika transaksi disimpan. Mengedit katalog produk tidak akan mengubah riwayat invoice.</p></div><div class="sale-actions"><a href="/transactions" class="btn btn-outline">← Semua Transaksi</a><a href="/transactions/new" class="btn btn-primary">+ Buat Transaksi</a></div></section>
+{% if success %}<div class="alert success-alert" role="status">{{ success }}</div>{% endif %}
+<div class="invoice-overview">
+  <div><span>Nomor Invoice</span><strong>{{ details.header.invoice_no }}</strong></div>
+  <div><span>Tanggal Penjualan</span><strong>{{ details.header.sold_at }}</strong></div>
+  <div><span>Jumlah Unit</span><strong>{{ details.header.units }} unit</strong></div>
+  <div><span>Total Penjualan</span><strong>{{ details.header.total | idr }}</strong></div>
+</div>
+<article class="panel table-panel"><div class="panel-heading"><div><h3>Rincian Produk</h3><p>{{ details['items']|length }} SKU dalam invoice ini</p></div><span class="mini-badge">Tersimpan</span></div>
+<div class="table-wrap"><table><thead><tr><th>SKU</th><th>Nama Produk</th><th>Jumlah</th><th class="align-right">Harga/unit</th><th class="align-right">Subtotal</th></tr></thead><tbody>
+{% for i in details['items'] %}<tr><td class="table-strong">{{ i.sku }}</td><td>{{ i.name }}</td><td>{{ i.quantity }} unit</td><td class="align-right">{{ i.unit_price | idr }}</td><td class="align-right table-strong">{{ i.line_total | idr }}</td></tr>{% endfor %}
+</tbody><tfoot><tr><td colspan="4" class="align-right"><strong>TOTAL</strong></td><td class="align-right"><strong>{{ details.header.total | idr }}</strong></td></tr></tfoot></table></div></article>
+{% endblock %}

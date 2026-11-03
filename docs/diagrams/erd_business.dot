@@ -1,0 +1,17 @@
+digraph DB {
+graph [rankdir=LR,bgcolor="white",pad="0.3",nodesep="0.60",ranksep="0.95",fontname="DejaVu Sans",label="UsahaInsight • ERD Bisnis & Persediaan",labelloc=t,fontsize=22,fontcolor="#182D40"];
+node [shape=box,style="rounded,filled",fillcolor="#F8FBFD",color="#7995A7",penwidth=1.3,fontname="DejaVu Sans",fontsize=12,margin="0.18,0.12"];
+edge [color="#58768A",penwidth=1.4,arrowsize=0.65,fontname="DejaVu Sans",fontsize=10,fontcolor="#354D60"];
+products [label="Produk\n──────────────────\nid (PK)\nsku (UNIQUE)\nname, category, unit_price\nmin_stock, is_active"];
+transactions [label="Transaksi\n──────────────────\nid (PK)\ninvoice_no (UNIQUE)\nsold_at"];
+transaction_items [label="Detail Transaksi\n──────────────────\nid (PK)\ntransaction_id (FK)\nproduct_id (FK)\nquantity, unit_price, line_total"];
+stock_movements [label="Pergerakan Stok\n──────────────────\nid (PK)\nproduct_id (FK)\ntransaction_id (FK, nullable)\nmovement_type, delta"];
+manual_sale_requests [label="Permintaan Jual\n──────────────────\nrequest_key (PK)\ntransaction_id (FK, UNIQUE)\npayload_hash"];
+reorder_settings [label="Parameter Restock\n──────────────────\nproduct_id (PK, FK)\nlead_time_days\nsafety_stock_units\nreview_days"];
+products -> transaction_items [label="1 : banyak"];
+transactions -> transaction_items [label="1 : banyak"];
+products -> stock_movements [label="1 : banyak"];
+transactions -> stock_movements [label="0/1 : banyak"];
+transactions -> manual_sale_requests [label="1 : 0/1"];
+products -> reorder_settings [label="1 : 0/1"];
+}

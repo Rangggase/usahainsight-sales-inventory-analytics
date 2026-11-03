@@ -1,0 +1,25 @@
+sku,name,category,unit_price,min_stock,initial_stock
+BRG-001,Beras Premium 5 kg,Sembako,77000,18,230
+BRG-002,Minyak Goreng 2 L,Sembako,38000,18,230
+BRG-003,Gula Pasir 1 kg,Sembako,18000,16,210
+BRG-004,Tepung Terigu 1 kg,Sembako,14000,15,150
+BRG-005,Mie Instan Goreng,Makanan,3500,25,310
+BRG-006,Biskuit Cokelat,Makanan,12500,10,135
+BRG-007,Roti Tawar,Makanan,17000,10,130
+BRG-008,Kopi Sachet,Minuman,2500,20,240
+BRG-009,Teh Celup 25 pcs,Minuman,11000,15,130
+BRG-010,Air Mineral 600 ml,Minuman,4000,20,240
+BRG-011,Susu UHT 1 L,Minuman,19500,10,140
+BRG-012,Sabun Mandi,Perawatan,6500,15,115
+BRG-013,Pasta Gigi,Perawatan,15000,12,115
+BRG-014,Sampo Sachet,Perawatan,2000,15,170
+BRG-015,Deterjen Bubuk 800 g,Rumah Tangga,21500,12,115
+BRG-016,Sabun Cuci Piring,Rumah Tangga,14500,12,110
+BRG-017,Tisu Wajah,Rumah Tangga,12500,8,90
+BRG-018,Baterai AA 2 pcs,Rumah Tangga,12000,8,90
+BRG-019,Kecap Manis,Sembako,12500,15,11
+BRG-020,Saus Sambal,Sembako,11500,15,12
+BRG-021,Sereal Jagung,Makanan,33000,10,8
+BRG-022,Minuman Isotonik,Minuman,9000,12,9
+BRG-023,Pembersih Lantai,Rumah Tangga,16000,10,8
+BRG-024,Permen Mint,Makanan,6500,7,55

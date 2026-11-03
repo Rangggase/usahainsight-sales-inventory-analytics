@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Masuk — UsahaInsight</title><link rel="stylesheet" href="/static/style.css"></head>
+<body class="login-body"><main class="login-card">
+<div class="eyebrow">USAHAINSIGHT · LOCAL BUSINESS</div><h1>Masuk ke UsahaInsight</h1>
+<p class="helper">Masuk sebagai administrator untuk mengelola produk, penjualan, dan laporan.</p>
+{% if setup_needed %}<div class="alert login-alert">Administrator belum dibuat. Di terminal PyCharm jalankan <code>python auth_manager.py init-admin</code>, lalu muat ulang halaman ini.</div>{% endif %}
+{% if error %}<div class="alert login-alert" role="alert">{{ error }}</div>{% endif %}
+<form method="post" action="/login" autocomplete="on">
+<input type="hidden" name="csrf_token" value="{{ login_csrf }}">
+<label class="field-label">Username<input name="username" type="text" autocomplete="username" required maxlength="40"></label>
+<label class="field-label">Password<input name="password" type="password" autocomplete="current-password" required></label>
+<button class="btn btn-primary login-button" type="submit">Masuk</button>
+</form><p class="helper">Sesi berakhir setelah 8 jam. Gunakan HTTPS dan set USAHAINSIGHT_COOKIE_SECURE=1 sebelum deployment di luar localhost.</p>
+</main></body></html>

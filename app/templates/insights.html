@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-heading insights-heading">
+  <div><div class="eyebrow">INVENTORY INTELLIGENCE</div><h1>Analitik Persediaan</h1>
+    <p>Kecepatan penjualan dan produk lambat terjual dari transaksi yang tersimpan.</p></div>
+</section>
+<article class="panel insights-filter-panel">
+  <form method="get" action="/insights" class="insights-filters">
+    <label>Periode <select name="days" aria-label="Periode analisis">
+      {% for d in [7,30,90] %}<option value="{{ d }}" {% if data.days == d %}selected{% endif %}>{{ d }} hari</option>{% endfor %}
+    </select></label>
+    <label>Klasifikasi <select name="status" aria-label="Status produk">
+      <option value="all" {% if data.classification == 'all' %}selected{% endif %}>Semua produk</option>
+      <option value="slow" {% if data.classification == 'slow' %}selected{% endif %}>Lambat terjual</option>
+      <option value="new" {% if data.classification == 'new' %}selected{% endif %}>Produk baru</option>
+      <option value="no_sales" {% if data.classification == 'no_sales' %}selected{% endif %}>Tanpa penjualan</option>
+      <option value="out_of_stock" {% if data.classification == 'out_of_stock' %}selected{% endif %}>Stok habis</option>
+    </select></label>
+    <label>Kategori <select name="category" aria-label="Kategori produk">
+      <option value="">Semua kategori</option>
+      {% for c in data.categories %}<option value="{{ c }}" {% if data.category == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+    </select></label>
+    <label class="insights-search">Cari SKU / nama <input name="q" value="{{ data.q }}" maxlength="100" placeholder="Cari produk..."></label>
+    <button class="btn btn-primary" type="submit">Terapkan</button>
+  </form>
+</article>
+<section class="metrics-grid insights-kpis" aria-label="Ringkasan analitik">
+  <article class="metric-card"><div class="metric-head"><span>Unit Terjual</span><div class="metric-icon blue">▤</div></div><div class="metric-value">{{ data.total_units }}</div><span class="metric-foot">Dalam {{ data.days }} hari terakhir</span></article>
+  <article class="metric-card"><div class="metric-head"><span>Lambat Terjual</span><div class="metric-icon orange">◷</div></div><div class="metric-value">{{ data.slow_count }}</div><span class="metric-foot">Stok ada, usia cukup, terjual ≤2</span></article>
+  <article class="metric-card"><div class="metric-head"><span>Produk Baru</span><div class="metric-icon mint">✦</div></div><div class="metric-value">{{ data.new_count }}</div><span class="metric-foot">Terdaftar kurang dari {{ data.days }} hari</span></article>
+  <article class="metric-card"><div class="metric-head"><span>Tanpa Penjualan</span><div class="metric-icon purple">—</div></div><div class="metric-value">{{ data.no_sales_count }}</div><span class="metric-foot">Belum terjual pada periode terpilih</span></article>
+</section>
+<article class="panel insights-table-panel">
+  <div class="panel-heading insights-panel-head"><div><h3>Analisis per Produk</h3>
+  <p>{{ data.start }} s.d. {{ data.as_of }} · {{ data.visible_count }} dari {{ data.total_products }} produk tampil</p></div>
+  <div class="insights-downloads"><a class="btn btn-outline btn-small" href="/insights/export?format=csv&amp;days={{ data.days }}&amp;q={{ data.q | urlencode }}&amp;category={{ data.category | urlencode }}&amp;status={{ data.classification }}">Unduh CSV</a>
+  <a class="btn btn-primary btn-small" href="/insights/export?format=xlsx&amp;days={{ data.days }}&amp;q={{ data.q | urlencode }}&amp;category={{ data.category | urlencode }}&amp;status={{ data.classification }}">Unduh Excel</a></div></div>
+  <div class="table-wrap"><table class="data-table insights-data-table"><thead><tr><th>Produk</th><th>Stok</th><th>Terjual</th><th>Unit / hari</th><th>Cakupan</th><th>Status</th></tr></thead>
+  <tbody>{% for p in data.rows %}<tr>
+    <td><div class="insights-product"><strong>{{ p.name }}</strong><small>{{ p.sku }} · {{ p.category }}</small></div></td>
+    <td>{{ p.current_stock }} <small class="insights-min">min. {{ p.min_stock }}</small></td>
+    <td>{{ p.units_sold }}</td>
+    <td>{{ '%.2f'|format(p.velocity_raw) }}</td>
+    <td>{% if p.coverage_days is not none %}{{ '%.1f'|format(p.coverage_days) }} hari{% else %}<span class="insights-empty">Tidak dapat dihitung</span>{% endif %}</td>
+    <td><span class="insights-status insights-status-{{ p.class_code }}">{{ p.classification }}</span></td>
+  </tr>{% else %}<tr><td colspan="6" class="insights-no-results">Tidak ada produk yang sesuai filter.</td></tr>{% endfor %}</tbody></table></div>
+</article>
+<article class="panel insights-method"><h3>Cara membaca analisis</h3>
+ <p><strong>Rata-rata unit/hari</strong> = unit terjual pada periode dibagi jumlah hari (7, 30, atau 90). <strong>Cakupan stok</strong> = stok saat ini dibagi rata-rata unit/hari. Jika tidak ada penjualan, estimasi cakupan tidak tersedia — bukan berarti stok cukup selamanya.</p>
+ <p><strong>Lambat terjual</strong>: stok masih positif, terjual 0–2 unit selama periode, dan produk sudah terdaftar setidaknya selama periode itu. Produk baru tidak otomatis dianggap lambat terjual. Tanggal pendaftaran berasal dari database UsahaInsight, bukan tanggal produk pertama kali dipasarkan. Transaksi masa depan tidak dihitung.</p>
+ <p><strong>Perhatian:</strong> Cakupan stok merupakan ilustrasi berbasis laju historis konstan, bukan prediksi AI ataupun rekomendasi pembelian otomatis. Semua angka pada database demo adalah data sintetis.</p>
+</article>
+{% endblock %}

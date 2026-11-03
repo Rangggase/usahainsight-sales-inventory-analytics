@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-heading"><div><div class="eyebrow">ACTIVITY & ACCOUNTABILITY</div>
+<h1>Audit Trail</h1><p>Riwayat aktivitas administrator sejak versi 1.3c. Baris bersifat hanya-baca.</p></div></section>
+<div class="inventory-intro"><span><strong>{{ data.total }}</strong> aktivitas tercatat</span>
+<span>Aktivitas lama sebelum v1.3c tidak dapat dikaitkan ke pengguna secara retroaktif</span></div>
+<article class="panel table-panel">
+<div class="table-toolbar"><form action="/audit" method="get" class="audit-filters">
+  <input type="search" name="q" maxlength="90" value="{{ q }}" placeholder="Cari pengguna / aktivitas" aria-label="Cari aktivitas">
+  <select name="action" aria-label="Filter tindakan"><option value="">Semua tindakan</option>
+  {% for a in actions %}<option value="{{ a }}" {% if action == a %}selected{% endif %}>{{ a }}</option>{% endfor %}</select>
+  <button class="btn btn-small btn-primary" type="submit">Filter</button><a class="btn btn-small btn-outline" href="/audit">Reset</a>
+</form></div>
+<div class="table-wrap"><table class="inventory-table audit-table">
+<thead><tr><th>Waktu (UTC)</th><th>Pengguna</th><th>Tindakan</th><th>Ringkasan</th><th>Detail</th></tr></thead>
+<tbody>{% for ev in data.events %}<tr>
+<td class="audit-nowrap">{{ ev.created_at }}</td><td>{{ ev.actor_username }}</td>
+<td><span class="status-tag status-green">{{ ev.action }}</span></td>
+<td>{{ ev.summary }}</td>
+<td>{% if ev.before is not none or ev.after is not none %}<details class="audit-detail"><summary>Lihat perubahan</summary>
+{% if ev.before is not none %}<strong>Sebelum</strong><pre>{{ ev.before | tojson(indent=2) }}</pre>{% endif %}
+{% if ev.after is not none %}<strong>Sesudah</strong><pre>{{ ev.after | tojson(indent=2) }}</pre>{% endif %}
+</details>{% else %}—{% endif %}</td>
+</tr>{% else %}<tr><td colspan="5" class="empty-cell">Belum ada aktivitas untuk filter ini.</td></tr>{% endfor %}</tbody>
+</table></div></article>
+<div class="audit-pagination"><span>Halaman {{ data.page }} dari {{ data.pages }}</span>
+{% if data.page > 1 %}<a class="btn btn-small btn-outline" href="/audit?p={{ data.page - 1 }}&amp;action={{ action | urlencode }}&amp;q={{ q | urlencode }}">← Sebelumnya</a>{% endif %}
+{% if data.page < data.pages %}<a class="btn btn-small btn-primary" href="/audit?p={{ data.page + 1 }}&amp;action={{ action | urlencode }}&amp;q={{ q | urlencode }}">Berikutnya →</a>{% endif %}
+</div>
+<p class="product-note">Audit ini melindungi dari pengubahan melalui antarmuka aplikasi, tetapi bukan log forensik yang kebal terhadap administrator dengan akses langsung ke file SQLite. Simpan backup di lokasi terpisah.</p>
+{% endblock %}

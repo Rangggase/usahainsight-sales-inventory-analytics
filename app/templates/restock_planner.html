@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-heading insights-heading">
+  <div><div class="eyebrow">INVENTORY INTELLIGENCE</div>
+    <h1>Rekomendasi Restock</h1>
+    <p>Saran pemesanan ulang berdasarkan penjualan, waktu tunggu pemasok, dan safety stock. Tidak membuat purchase order otomatis.</p>
+  </div>
+</section>
+{% if success %}<div class="alert success-alert"><span>✓</span> {{ success }}</div>{% endif %}
+{% if error %}<div class="alert error-alert"><span>!</span> {{ error }}</div>{% endif %}
+<article class="panel insights-filter-panel">
+  <form action="/restock-planner" method="get" class="insights-filters">
+    <label>Periode penjualan
+      <select name="days">{% for day in [7, 30, 90] %}
+        <option value="{{ day }}" {% if data.days == day %}selected{% endif %}>{{ day }} hari</option>
+      {% endfor %}</select>
+    </label>
+    <label>Status
+      <select name="status">
+        <option value="all" {% if data.status == 'all' %}selected{% endif %}>Semua</option>
+        <option value="due" {% if data.status == 'due' %}selected{% endif %}>Perlu pesan ulang</option>
+        <option value="unconfigured" {% if data.status == 'unconfigured' %}selected{% endif %}>Belum diatur</option>
+        <option value="insufficient" {% if data.status == 'insufficient' %}selected{% endif %}>Data terbatas</option>
+        <option value="healthy" {% if data.status == 'healthy' %}selected{% endif %}>Stok cukup</option>
+      </select>
+    </label>
+    <label>Kategori <select name="category"><option value="">Semua kategori</option>
+      {% for cat in data.categories %}<option value="{{ cat }}" {% if data.category == cat %}selected{% endif %}>{{ cat }}</option>{% endfor %}
+    </select></label>
+    <label class="insights-search">Cari produk / SKU
+      <input type="search" name="q" maxlength="100" value="{{ data.q }}" placeholder="SKU atau nama ...">
+    </label>
+    <button class="btn btn-primary" type="submit">Terapkan</button>
+  </form>
+</article>
+<section class="metrics-grid insights-kpis">
+  <article class="metric-card"><div class="metric-head"><span>Perlu Pesan Ulang</span><div class="metric-icon orange">!</div></div><div class="metric-value">{{ data.counts.due }}</div><span class="metric-foot">Sudah memiliki parameter &amp; histori memadai</span></article>
+  <article class="metric-card"><div class="metric-head"><span>Belum Dikonfigurasi</span><div class="metric-icon purple">⚙</div></div><div class="metric-value">{{ data.counts.unconfigured }}</div><span class="metric-foot">Atur lead time, safety stock, tinjau</span></article>
+  <article class="metric-card"><div class="metric-head"><span>Data Terbatas</span><div class="metric-icon blue">◷</div></div><div class="metric-value">{{ data.counts.insufficient }}</div><span class="metric-foot">Produk baru atau tanpa penjualan</span></article>
+  <article class="metric-card"><div class="metric-head"><span>Stok Memadai</span><div class="metric-icon mint">✓</div></div><div class="metric-value">{{ data.counts.healthy }}</div><span class="metric-foot">Di atas reorder point saat ini</span></article>
+</section>
+<article class="panel">
+  <div class="panel-heading insights-panel-head">
+    <div><h3>Perencanaan per Produk</h3><p>{{ data.start }} hingga {{ data.as_of }} · {{ data.visible_count }} dari {{ data.total_products }} produk</p></div>
+    <div class="insights-downloads">
+      <a class="btn btn-outline btn-small" href="/restock-planner/export?format=csv&amp;days={{ data.days }}&amp;q={{ data.q | urlencode }}&amp;category={{ data.category | urlencode }}&amp;status={{ data.status }}">Unduh CSV</a>
+      <a class="btn btn-primary btn-small" href="/restock-planner/export?format=xlsx&amp;days={{ data.days }}&amp;q={{ data.q | urlencode }}&amp;category={{ data.category | urlencode }}&amp;status={{ data.status }}">Unduh Excel</a>
+    </div>
+  </div>
+  <div class="table-wrap"><table class="data-table restock-table">
+    <thead><tr><th>Produk</th><th>Stok</th><th>Unit/hari</th><th>Lead time</th><th>Safety</th><th>ROP</th><th>Saran qty</th><th>Status &amp; parameter</th></tr></thead>
+    <tbody>
+      {% for p in data.rows %}
+      <tr>
+        <td><div class="insights-product"><strong>{{ p.name }}</strong><small>{{ p.sku }} · {{ p.category }}</small></div></td>
+        <td>{{ p.current_stock }}<small class="insights-min">Minimum: {{ p.min_stock }}</small></td>
+        <td>{{ '%.2f'|format(p.velocity_raw) }}</td>
+        <td>{{ p.lead_time_days if p.configured else '—' }}{% if p.configured %} hari{% endif %}</td>
+        <td>{{ p.safety_stock_units if p.configured else '—' }}</td>
+        <td>{% if p.reorder_point is not none %}{{ p.reorder_point }}{% else %}—{% endif %}</td>
+        <td><strong>{% if p.suggested_qty is not none %}{{ p.suggested_qty }}{% else %}—{% endif %}</strong></td>
+        <td><span class="status-tag restock-status-{{ p.plan_status }}">{{ p.status_label }}</span>
+          <details class="restock-config"><summary>Atur parameter</summary>
+            <p>{{ p.reason }}</p>
+            <form action="/restock-planner/{{ p.id }}/settings" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <label>Lead time pemasok (1–365 hari)<input type="number" name="lead_time_days" min="1" max="365" required value="{{ p.lead_time_days if p.configured else 7 }}"></label>
+              <label>Safety stock (unit)<input type="number" name="safety_stock_units" min="0" max="1000000" required value="{{ p.safety_stock_units if p.configured else p.min_stock }}"></label>
+              <label>Periode tinjau (1–90 hari)<input type="number" name="review_days" min="1" max="90" required value="{{ p.review_days if p.configured else 7 }}"></label>
+              <button class="btn btn-primary btn-small" type="submit">Simpan parameter</button>
+            </form>
+          </details>
+        </td>
+      </tr>
+      {% else %}<tr><td colspan="8" class="insights-no-results">Tidak ada produk pada filter ini.</td></tr>{% endfor %}
+    </tbody>
+  </table></div>
+</article>
+<article class="panel insights-method restock-explainer">
+  <h3>Bagaimana rekomendasi dihitung?</h3>
+  <p><strong>ROP</strong> = pembulatan ke atas (unit terjual / hari periode × lead time) + safety stock. Status <strong>Perlu pesan ulang</strong> muncul saat stok tersedia ≤ ROP.</p>
+  <p><strong>Saran kuantitas</strong> = jika stok ≤ ROP, maksimum dari 1 dan [pembulatan ke atas (unit terjual / hari periode × (lead time + periode tinjau)) + safety stock − stok]; jika stok &gt; ROP, saran 0. Selalu verifikasi pemasok, barang dalam perjalanan, promosi, dan perubahan permintaan sebelum memesan.</p>
+  <p><strong>Pengamanan metodologis:</strong> parameter harus disimpan secara eksplisit. Produk yang belum berumur satu periode atau tanpa penjualan tidak diberi angka pembelian; periksa batas stok minimum dan kebutuhan toko secara manual. Hanya penjualan tercatat sampai hari ini yang dihitung. Demo sintetis tidak boleh dianggap data bisnis riil.</p>
+</article>
+{% endblock %}

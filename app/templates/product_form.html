@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-heading"><div><div class="eyebrow">PRODUCT MANAGEMENT / {{ 'EDIT' if editing else 'CREATE' }}</div><h1>{{ 'Edit Produk' if editing else 'Tambah Produk Baru' }}</h1><p>{{ 'Ubah detail katalog tanpa memengaruhi harga di histori invoice.' if editing else 'Isi identitas, harga, dan stok awal produk baru.' }}</p></div><a href="/products" class="btn btn-outline">← Kembali</a></section>
+{% if errors %}<div class="alert error-alert" role="alert"><span>!</span><div><strong>Data belum tersimpan.</strong><ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div></div>{% endif %}
+<article class="panel product-form-card"><form method="post" action="{{ '/products/' ~ product.id ~ '/edit' if editing else '/products/new' }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<div class="product-field-grid">
+<label class="field-label">Kode SKU
+<input type="text" name="sku" maxlength="32" pattern="[A-Za-z0-9._-]{2,32}" value="{{ form.sku }}" {% if editing %}readonly{% else %}required{% endif %} placeholder="Contoh: BRG-025">
+<small>{{ 'SKU tidak dapat diubah setelah produk dibuat.' if editing else '2–32 karakter; huruf, angka, titik, dash, underscore.' }}</small></label>
+<label class="field-label">Nama Produk<input type="text" name="name" maxlength="120" value="{{ form.name }}" required placeholder="Contoh: Beras Premium 5kg"></label>
+<label class="field-label">Kategori<input type="text" name="category" maxlength="80" value="{{ form.category }}" required placeholder="Contoh: Sembako"></label>
+<label class="field-label">Harga Jual (Rp)<input type="number" name="unit_price" min="0" max="1000000000" step="1" value="{{ form.unit_price }}" required></label>
+<label class="field-label">Batas Minimum Stok<input type="number" name="min_stock" min="0" max="1000000000" step="1" value="{{ form.min_stock }}" required></label>
+{% if not editing %}<label class="field-label">Stok Awal<input type="number" name="initial_stock" min="0" max="1000000000" step="1" value="{{ form.initial_stock }}" required><small>Dicatat sekali dalam ledger pergerakan stok.</small></label>{% endif %}
+</div>
+<div class="product-form-footer"><p>{{ 'Stok saat ini: ' ~ product.current_stock ~ ' unit. Edit produk tidak mengubah stok.' if editing else 'Harga diisi dalam Rupiah bulat tanpa pemisah ribuan.' }}</p><button type="submit" class="btn btn-primary">{{ 'Simpan Perubahan' if editing else 'Simpan Produk' }}</button></div>
+</form></article>
+{% endblock %}

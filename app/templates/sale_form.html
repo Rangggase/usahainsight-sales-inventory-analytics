@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% macro sale_line(item) -%}
+<div class="sale-line" data-sale-line>
+  <label class="field-label sale-product">Produk
+    <select name="product_id" required class="sale-product-select">
+      <option value="">Pilih produk...</option>
+      {% for p in products %}
+      <option value="{{ p.id }}" data-price="{{ p.unit_price }}" data-stock="{{ p.current_stock }}"
+        {% if item.product_id|string == p.id|string %}selected{% endif %}>
+        {{ p.sku }} — {{ p.name }} ({{ p.current_stock }} unit)
+      </option>
+      {% endfor %}
+    </select>
+    <small class="sale-stock-hint">Harga dan stok mengikuti data terbaru di server.</small>
+  </label>
+  <label class="field-label sale-quantity">Jumlah
+    <input name="quantity" class="sale-quantity-input" type="number" min="1" max="1000000" step="1" required value="{{ item.quantity }}">
+  </label>
+  <div class="sale-line-total"><span>Subtotal</span><strong data-subtotal>Rp 0</strong></div>
+  <button type="button" class="btn btn-outline btn-small sale-remove" data-remove-line aria-label="Hapus baris produk">✕</button>
+</div>
+{%- endmacro %}
+{% block content %}
+<section class="page-heading"><div><div class="eyebrow">TRANSACTION MANAGEMENT / NEW SALE</div><h1>Buat Transaksi Penjualan</h1><p>Masukkan satu atau beberapa produk. Harga terkunci saat transaksi disimpan, dan stok berkurang otomatis.</p></div><a href="/transactions" class="btn btn-outline">← Kembali ke Transaksi</a></section>
+{% if errors %}<div class="alert error-alert" role="alert"><span>!</span><div><strong>Transaksi belum disimpan. Tidak ada stok yang berubah.</strong><ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul></div></div>{% endif %}
+<article class="panel sale-form-panel">
+  <form method="post" action="/transactions/new" id="new-sale-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="request_key" value="{{ request_key }}">
+    <div class="product-field-grid">
+      <label class="field-label">Nomor Invoice (opsional)
+        <input name="invoice_no" maxlength="60" pattern="[A-Za-z0-9._-]{3,60}" value="{{ invoice_no }}" placeholder="Kosongkan untuk nomor otomatis">
+        <small>Bila kosong, sistem memberi nomor UI-YYYYMMDD-XXXX.</small>
+      </label>
+      <label class="field-label">Tanggal Penjualan
+        <input name="sold_at" type="date" max="{{ today_date }}" value="{{ sold_at }}" required>
+        <small>Tanggal transaksi tidak boleh di masa depan.</small>
+      </label>
+    </div>
+    <div class="sale-section-head"><div><h2>Daftar Produk</h2><p>Maksimal 20 jenis produk dalam satu transaksi. SKU tidak boleh berulang.</p></div><button type="button" id="add-sale-line" class="btn btn-soft">+ Tambah Baris Produk</button></div>
+    {% if not products %}<div class="alert error-alert">Tidak ada produk aktif. <a href="/products/new">Tambahkan produk terlebih dahulu.</a></div>{% endif %}
+    <div id="sale-lines">{% for item in form_items %}{{ sale_line(item) }}{% endfor %}</div>
+    <template id="sale-line-template">{{ sale_line({'product_id':'','quantity':'1'}) }}</template>
+    <div id="sale-ui-errors" class="sale-ui-errors" role="alert" aria-live="polite"></div>
+    <div class="sale-checkout"><div><span>Estimasi Total</span><strong id="sale-grand-total">Rp 0</strong><small>Nilai final mengikuti harga di database saat disimpan.</small></div><button type="submit" id="sale-submit" class="btn btn-primary" {% if not products %}disabled{% endif %}>Simpan Transaksi</button></div>
+  </form>
+</article>
+{% endblock %}
